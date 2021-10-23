@@ -31,6 +31,17 @@ int main()
     // Set the spriteBackground to cover the screen
     spriteBackground.setPosition(0, 0);
 
+    // Power bar
+    RectangleShape powerBar, powerBarOutline;
+    float powerBarWidth = 400;
+    float powerBarHeight = 40;
+    powerBarOutline.setSize(Vector2f(powerBarWidth, powerBarHeight));
+    powerBarOutline.setOutlineColor(Color::Black);
+    powerBarOutline.setOutlineThickness(6);
+    powerBarOutline.setFillColor(Color::Transparent);
+
+    powerBar.setSize(Vector2f(powerBarWidth*0.75f, powerBarHeight));
+    powerBar.setFillColor(Color::Red);
 
     //Create Text Objects
     Text titleText;
@@ -132,7 +143,9 @@ int main()
 
     scoreText.setPosition(1750, 20);
     livesText.setPosition(30, 30);
-    powerText.setPosition(30, 1010);
+    powerText.setPosition(30, 1000);
+    powerBar.setPosition(135 ,  995);
+    powerBarOutline.setPosition(135 ,  995);
 
     while(window.isOpen()){
 
@@ -146,6 +159,8 @@ int main()
 
         // Draw our game scene here
         window.draw(spriteBackground);
+        window.draw(powerBar);
+        window.draw(powerBarOutline);
         window.draw(titleText);
         window.draw(scoreText);
         window.draw(livesText);
