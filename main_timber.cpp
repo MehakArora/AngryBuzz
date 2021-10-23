@@ -17,7 +17,7 @@ enum class side { LEFT, RIGHT, NONE };
 side branchPositions[NUM_BRANCHES];
 
 
-int main()
+int main1()
 {
     // Create a video mode object
     VideoMode vm(1920, 1080);

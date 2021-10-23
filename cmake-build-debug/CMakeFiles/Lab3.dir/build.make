@@ -65,10 +65,24 @@ include CMakeFiles/Lab3.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/Lab3.dir/flags.make
 
+CMakeFiles/Lab3.dir/main_timber.cpp.obj: CMakeFiles/Lab3.dir/flags.make
+CMakeFiles/Lab3.dir/main_timber.cpp.obj: CMakeFiles/Lab3.dir/includes_CXX.rsp
+CMakeFiles/Lab3.dir/main_timber.cpp.obj: ../main_timber.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\mehak\CLionProjects\Lab3\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/Lab3.dir/main_timber.cpp.obj"
+	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\Lab3.dir\main_timber.cpp.obj -c C:\Users\mehak\CLionProjects\Lab3\main_timber.cpp
+
+CMakeFiles/Lab3.dir/main_timber.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Lab3.dir/main_timber.cpp.i"
+	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\mehak\CLionProjects\Lab3\main_timber.cpp > CMakeFiles\Lab3.dir\main_timber.cpp.i
+
+CMakeFiles/Lab3.dir/main_timber.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Lab3.dir/main_timber.cpp.s"
+	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\mehak\CLionProjects\Lab3\main_timber.cpp -o CMakeFiles\Lab3.dir\main_timber.cpp.s
+
 CMakeFiles/Lab3.dir/main.cpp.obj: CMakeFiles/Lab3.dir/flags.make
 CMakeFiles/Lab3.dir/main.cpp.obj: CMakeFiles/Lab3.dir/includes_CXX.rsp
 CMakeFiles/Lab3.dir/main.cpp.obj: ../main.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\mehak\CLionProjects\Lab3\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/Lab3.dir/main.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\mehak\CLionProjects\Lab3\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/Lab3.dir/main.cpp.obj"
 	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\Lab3.dir\main.cpp.obj -c C:\Users\mehak\CLionProjects\Lab3\main.cpp
 
 CMakeFiles/Lab3.dir/main.cpp.i: cmake_force
@@ -79,30 +93,16 @@ CMakeFiles/Lab3.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Lab3.dir/main.cpp.s"
 	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\mehak\CLionProjects\Lab3\main.cpp -o CMakeFiles\Lab3.dir\main.cpp.s
 
-CMakeFiles/Lab3.dir/main1.cpp.obj: CMakeFiles/Lab3.dir/flags.make
-CMakeFiles/Lab3.dir/main1.cpp.obj: CMakeFiles/Lab3.dir/includes_CXX.rsp
-CMakeFiles/Lab3.dir/main1.cpp.obj: ../main1.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\mehak\CLionProjects\Lab3\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/Lab3.dir/main1.cpp.obj"
-	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\Lab3.dir\main1.cpp.obj -c C:\Users\mehak\CLionProjects\Lab3\main1.cpp
-
-CMakeFiles/Lab3.dir/main1.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Lab3.dir/main1.cpp.i"
-	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\mehak\CLionProjects\Lab3\main1.cpp > CMakeFiles\Lab3.dir\main1.cpp.i
-
-CMakeFiles/Lab3.dir/main1.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Lab3.dir/main1.cpp.s"
-	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\mehak\CLionProjects\Lab3\main1.cpp -o CMakeFiles\Lab3.dir\main1.cpp.s
-
 # Object files for target Lab3
 Lab3_OBJECTS = \
-"CMakeFiles/Lab3.dir/main.cpp.obj" \
-"CMakeFiles/Lab3.dir/main1.cpp.obj"
+"CMakeFiles/Lab3.dir/main_timber.cpp.obj" \
+"CMakeFiles/Lab3.dir/main.cpp.obj"
 
 # External object files for target Lab3
 Lab3_EXTERNAL_OBJECTS =
 
+Lab3.exe: CMakeFiles/Lab3.dir/main_timber.cpp.obj
 Lab3.exe: CMakeFiles/Lab3.dir/main.cpp.obj
-Lab3.exe: CMakeFiles/Lab3.dir/main1.cpp.obj
 Lab3.exe: CMakeFiles/Lab3.dir/build.make
 Lab3.exe: C:/SFML/SFML-2.5.1/lib/libsfml-audio-d.a
 Lab3.exe: C:/SFML/SFML-2.5.1/lib/libsfml-graphics-d.a
