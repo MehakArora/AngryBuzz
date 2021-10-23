@@ -22,6 +22,7 @@ int main()
     Texture textureBackground;
     textureBackground.loadFromFile("graphics/background.png");
 
+
     // Create a sprite
     Sprite spriteBackground;
 
