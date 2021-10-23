@@ -9,6 +9,10 @@
 
 // Make code easier to type with "using namespace"
 using namespace sf;
+#define UNICORN 8;
+#define GEORGIABULLDOG 10;
+
+
 
 int main()
 {
@@ -20,17 +24,36 @@ int main()
 
     // Create a texture to hold a graphic on the GPU
     Texture textureBackground;
+    Texture textureBuzz, textureLives, textureInsect, textureCreature[10];
     textureBackground.loadFromFile("graphics/background.png");
+    textureBuzz.loadFromFile("graphics/smallbuzzy.png");
+    textureLives.loadFromFile("graphics/buzzylife.png");
+    textureInsect.loadFromFile("graphics/bee.png");
+    textureCreature[0].loadFromFile("graphics/bunny.png");
+    textureCreature[1].loadFromFile("graphics/chicken.png");
+    textureCreature[2].loadFromFile("graphics/dog.png");
+    textureCreature[3].loadFromFile("graphics/frog.png");
+    textureCreature[4].loadFromFile("graphics/mouse.png");
+    textureCreature[5].loadFromFile("graphics/pig.png");
+    textureCreature[6].loadFromFile("graphics/sheep.png");
+    textureCreature[7].loadFromFile("graphics/tiger.png");
+    textureCreature[8].loadFromFile("graphics/angry_unicorn.png");
+    textureCreature[10].loadFromFile("graphics/Georgia_Bulldogs_logo_dog_g.png");
 
 
     // Create a sprite
     Sprite spriteBackground;
+    Sprite spriteBuzz, spriteLives, spriteInsect, spriteCreature[10];
 
     // Attach the texture to the sprite
     spriteBackground.setTexture(textureBackground);
-
-    // Set the spriteBackground to cover the screen
-    spriteBackground.setPosition(0, 0);
+    spriteBuzz.setTexture(textureBuzz);
+    spriteLives.setTexture(textureLives);
+    spriteInsect.setTexture(textureInsect);
+    for (int i; i < 10; i++ )
+    {
+        spriteCreature[i].setTexture(textureCreature[i]);
+    }
 
     // Power bar
     RectangleShape powerBar, powerBarOutline;
@@ -62,11 +85,13 @@ int main()
     livesText.setFont(font);
     powerText.setFont(font);
 
-    for (int i = 0; i < 4 ; i++){
+    for (int i = 0; i < 4 ; i++)
+    {
         messageText[i].setFont(font);
     }
 
-    for (int i = 0; i < 2 ; i++){
+    for (int i = 0; i < 2 ; i++)
+    {
         nameText[i].setFont(font);
     }
 
@@ -86,24 +111,35 @@ int main()
     titleText.setCharacterSize(100);
     scoreText.setCharacterSize(25);
     livesText.setCharacterSize(25);
-    for (int i = 0; i < 4 ; i++){
+    for (int i = 0; i < 4 ; i++)
+    {
         messageText[i].setCharacterSize(50);
     }
+
     powerText.setCharacterSize(25);
-    for (int i = 0; i < 2 ; i++){
+
+    for (int i = 0; i < 2 ; i++)
+    {
         nameText[i].setCharacterSize(25);
     }
 
     titleText.setFillColor(Color::Red);
     scoreText.setFillColor(Color::White);
     livesText.setFillColor(Color::White);
-    for (int i = 0; i < 4 ; i++){
+    for (int i = 0; i < 4 ; i++)
+    {
         messageText[i].setFillColor(Color::White);
     }
     powerText.setFillColor(Color::White);
-    for (int i = 0; i < 2 ; i++){
+    for (int i = 0; i < 2 ; i++)
+    {
         nameText[i].setFillColor(Color::White);
     }
+
+
+    // Set the spriteBackground to cover the screen
+    spriteBackground.setPosition(0, 0);
+
 
     // Position the text
     FloatRect textRect = titleText.getLocalBounds();
@@ -117,7 +153,8 @@ int main()
     float lastPos = 1080 / 4.0f + 25;
     int textSpace = 75;
 
-    for (int i = 0; i < 4 ; i++){
+    for (int i = 0; i < 4 ; i++)
+    {
 
         textRect = messageText[i].getLocalBounds();
         messageText[i].setOrigin(textRect.left +
@@ -130,7 +167,8 @@ int main()
 
     lastPos += 100;
     textSpace = 25;
-    for (int i = 0; i < 2 ; i++){
+    for (int i = 0; i < 2 ; i++)
+    {
 
         textRect = nameText[i].getLocalBounds();
         nameText[i].setOrigin(textRect.left +
@@ -147,6 +185,32 @@ int main()
     powerText.setPosition(30, 1000);
     powerBar.setPosition(135 ,  995);
     powerBarOutline.setPosition(135 ,  995);
+
+    float creaturePos[10][2];
+    int creatureOrder[10] = {0,1,2,3,4,5,6,7,8,9};
+    float startY(1080 / 4.0f + 100);
+    float x1(1700), x2(1750);
+
+    for (int i = 0 ; i < 10; i++)
+    {
+        if(i < 5)
+        {
+            creaturePos[i][0] = x1;
+        }
+        else
+        {
+            creaturePos[i][0] = x2;
+        }
+
+        creaturePos[i][1] = startY + i*10;
+    }
+
+    int index;
+    for (int i = 0; i < 10; i++)
+    {
+        index = creatureOrder[i];
+        spriteCreature[index].setPosition(creaturePos[i][0], creaturePos[i][1]);
+    }
 
     while(window.isOpen()){
 
