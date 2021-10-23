@@ -1,0 +1,5 @@
+C:/Users/mehak/CLionProjects/Lab3/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+C:/Users/mehak/CLionProjects/Lab3/cmake-build-debug/CMakeFiles/Lab3.dir
+C:/Users/mehak/CLionProjects/Lab3/cmake-build-debug/CMakeFiles/package.dir
+C:/Users/mehak/CLionProjects/Lab3/cmake-build-debug/CMakeFiles/package_source.dir
+C:/Users/mehak/CLionProjects/Lab3/cmake-build-debug/CMakeFiles/edit_cache.dir
