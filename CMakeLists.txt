@@ -12,7 +12,7 @@ set(SFML_DIR "C:/SFML/SFML-2.5.1/lib/cmake/SFML")
 #set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake_modules")
 find_package(SFML 2 COMPONENTS audio graphics)
 
-add_executable(Lab3 main_timber.cpp main.cpp)
+add_executable(Lab3 main.cpp)
 target_link_libraries(Lab3 sfml-audio sfml-graphics)
 
 

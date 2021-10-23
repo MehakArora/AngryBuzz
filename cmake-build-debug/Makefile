@@ -172,30 +172,6 @@ main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Lab3.dir\build.make CMakeFiles/Lab3.dir/main.cpp.s
 .PHONY : main.cpp.s
 
-main_timber.obj: main_timber.cpp.obj
-.PHONY : main_timber.obj
-
-# target to build an object file
-main_timber.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Lab3.dir\build.make CMakeFiles/Lab3.dir/main_timber.cpp.obj
-.PHONY : main_timber.cpp.obj
-
-main_timber.i: main_timber.cpp.i
-.PHONY : main_timber.i
-
-# target to preprocess a source file
-main_timber.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Lab3.dir\build.make CMakeFiles/Lab3.dir/main_timber.cpp.i
-.PHONY : main_timber.cpp.i
-
-main_timber.s: main_timber.cpp.s
-.PHONY : main_timber.s
-
-# target to generate assembly for a file
-main_timber.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Lab3.dir\build.make CMakeFiles/Lab3.dir/main_timber.cpp.s
-.PHONY : main_timber.cpp.s
-
 # Help Target
 help:
 	@echo The following are some of the valid targets for this Makefile:
@@ -210,9 +186,6 @@ help:
 	@echo ... main.obj
 	@echo ... main.i
 	@echo ... main.s
-	@echo ... main_timber.obj
-	@echo ... main_timber.i
-	@echo ... main_timber.s
 .PHONY : help
 
 

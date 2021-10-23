@@ -105,9 +105,6 @@
 		<Unit filename="C:/Users/mehak/CLionProjects/Lab3/main.cpp">
 			<Option target="Lab3"/>
 		</Unit>
-		<Unit filename="C:/Users/mehak/CLionProjects/Lab3/main_timber.cpp">
-			<Option target="Lab3"/>
-		</Unit>
 		<Unit filename="C:/Users/mehak/CLionProjects/Lab3/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>

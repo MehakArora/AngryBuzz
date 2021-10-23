@@ -853,13 +853,7 @@ C:/SFML/SFML-2.5.1/include/SFML/Window/WindowStyle.hpp
 C:/Users/mehak/CLionProjects/Lab3/main.cpp
 sstream
 -
-SFML/Graphics.hpp
--
-SFML/Audio.hpp
--
-
-C:/Users/mehak/CLionProjects/Lab3/main_timber.cpp
-sstream
+iostream
 -
 SFML/Graphics.hpp
 -
