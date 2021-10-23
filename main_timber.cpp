@@ -8,7 +8,7 @@ using namespace sf;
 // Function declaration
 void updateBranches(int seed);
 
-const int NUM_BRANCHES = 6;
+//const int NUM_BRANCHES = 6;
 Sprite branches[NUM_BRANCHES];
 
 // Where is the player/branch?
