@@ -4,13 +4,18 @@
 
 #include <sstream>
 #include <iostream>
+#include <bits/stdc++.h>
+#include <stdlib.h>
+#include <time.h>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 
 // Make code easier to type with "using namespace"
 using namespace sf;
 #define UNICORN 8;
-#define GEORGIABULLDOG 10;
+#define GEORGIABULLDOG 9;
+#define TIGER 0;
+
 
 
 
@@ -29,42 +34,61 @@ int main()
     textureBuzz.loadFromFile("graphics/smallbuzzy.png");
     textureLives.loadFromFile("graphics/buzzylife.png");
     textureInsect.loadFromFile("graphics/bee.png");
-    textureCreature[0].loadFromFile("graphics/bunny.png");
+
+    textureCreature[0].loadFromFile("graphics/tiger.png");
     textureCreature[1].loadFromFile("graphics/chicken.png");
     textureCreature[2].loadFromFile("graphics/dog.png");
     textureCreature[3].loadFromFile("graphics/frog.png");
     textureCreature[4].loadFromFile("graphics/mouse.png");
     textureCreature[5].loadFromFile("graphics/pig.png");
     textureCreature[6].loadFromFile("graphics/sheep.png");
-    textureCreature[7].loadFromFile("graphics/tiger.png");
+    textureCreature[7].loadFromFile("graphics/bunny.png");
     textureCreature[8].loadFromFile("graphics/angry_unicorn.png");
-    textureCreature[10].loadFromFile("graphics/Georgia_Bulldogs_logo_dog_g.png");
+    textureCreature[9].loadFromFile("graphics/Georgia_Bulldogs_logo_dog_g.png");
 
 
     // Create a sprite
+    const int totalLives = 5;
+
     Sprite spriteBackground;
-    Sprite spriteBuzz, spriteLives, spriteInsect, spriteCreature[10];
+    Sprite spriteBuzz, spriteLives[totalLives], spriteInsect, spriteCreature[10];
 
     // Attach the texture to the sprite
     spriteBackground.setTexture(textureBackground);
     spriteBuzz.setTexture(textureBuzz);
-    spriteLives.setTexture(textureLives);
     spriteInsect.setTexture(textureInsect);
-    for (int i; i < 10; i++ )
+    
+    for (int i = 0; i < totalLives; i++)
+    {
+        spriteLives[i].setTexture(textureLives);
+    }
+
+    FloatRect textRect;
+
+    for (int i = 0; i < 10; i++ )
     {
         spriteCreature[i].setTexture(textureCreature[i]);
+        textRect = spriteCreature[i].getLocalBounds();
+        spriteCreature[i].setOrigin(textRect.left +
+                                        textRect.width / 2.0f,
+                                        textRect.top +
+                                        textRect.height / 2.0f);
     }
+
+    //Set Scale for bunny and tiger
+    spriteCreature[0].setScale(1/8.0f, 1/8.0f);
 
     // Power bar
     RectangleShape powerBar, powerBarOutline;
     float powerBarWidth = 400;
     float powerBarHeight = 40;
+    float power = 0.75f;
     powerBarOutline.setSize(Vector2f(powerBarWidth, powerBarHeight));
     powerBarOutline.setOutlineColor(Color::Black);
     powerBarOutline.setOutlineThickness(6);
     powerBarOutline.setFillColor(Color::Transparent);
 
-    powerBar.setSize(Vector2f(powerBarWidth*0.75f, powerBarHeight));
+    powerBar.setSize(Vector2f(powerBarWidth*power, powerBarHeight));
     powerBar.setFillColor(Color::Red);
 
     //Create Text Objects
@@ -109,14 +133,14 @@ int main()
     nameText[1].setString(" Mehak Arora ");
 
     titleText.setCharacterSize(100);
-    scoreText.setCharacterSize(25);
-    livesText.setCharacterSize(25);
+    scoreText.setCharacterSize(30);
+    livesText.setCharacterSize(30);
     for (int i = 0; i < 4 ; i++)
     {
         messageText[i].setCharacterSize(50);
     }
 
-    powerText.setCharacterSize(25);
+    powerText.setCharacterSize(30);
 
     for (int i = 0; i < 2 ; i++)
     {
@@ -142,7 +166,7 @@ int main()
 
 
     // Position the text
-    FloatRect textRect = titleText.getLocalBounds();
+    textRect = titleText.getLocalBounds();
 
     titleText.setOrigin(textRect.left +
                           textRect.width / 2.0f,
@@ -180,44 +204,189 @@ int main()
         lastPos += textSpace;
     }
 
-    scoreText.setPosition(1750, 20);
-    livesText.setPosition(30, 30);
+    scoreText.setPosition(1710, 20);
+    livesText.setPosition(30, 33);
     powerText.setPosition(30, 1000);
-    powerBar.setPosition(135 ,  995);
-    powerBarOutline.setPosition(135 ,  995);
+    powerBar.setPosition(150 ,  1000);
+    powerBarOutline.setPosition(150 ,  1000);
 
-    float creaturePos[10][2];
-    int creatureOrder[10] = {0,1,2,3,4,5,6,7,8,9};
-    float startY(1080 / 4.0f + 100);
-    float x1(1700), x2(1750);
+    Vector2f scaleCurrent;
+    spriteInsect.setPosition( 1600,(1080 / 4.0f) - 100);
+    scaleCurrent = spriteInsect.getScale();
+    spriteInsect.setScale(scaleCurrent.x * 1.5f, scaleCurrent.y * 1.5f);
+
+    spriteBuzz.setPosition(1, (1080 / 2.0f) + 50);
+    spriteBuzz.setRotation(-30);
+    scaleCurrent = spriteBuzz.getScale();
+    spriteBuzz.setScale(scaleCurrent.x * 1.5f, scaleCurrent.y * 1.5f);
+
+    for (int i =0; i < totalLives; i++)
+    {
+        scaleCurrent = spriteLives[i].getScale();
+        spriteLives[i].scale(scaleCurrent.x /2.0f, scaleCurrent.y/2.0f);
+        spriteLives[i].setPosition(120 + i*55 ,20);
+
+    }
+
+
+    Vector2f creaturePos[10];
+
+    float startY(1080 / 3.0f );
+    float x1(1650), x2(1780);
 
     for (int i = 0 ; i < 10; i++)
     {
         if(i < 5)
         {
-            creaturePos[i][0] = x1;
+            creaturePos[i].x = x1;
         }
         else
         {
-            creaturePos[i][0] = x2;
+            creaturePos[i].x = x2;
         }
 
-        creaturePos[i][1] = startY + i*10;
+        creaturePos[i].y = startY + (i % 5)*120;
     }
 
     int index;
-    for (int i = 0; i < 10; i++)
+    srand(time(0));
+
+    int column1[5], column2[5], creatureRest[8] = {1,2,3,4,5,6,7,8};
+
+    if(rand()%2 == 0)
     {
-        index = creatureOrder[i];
-        spriteCreature[index].setPosition(creaturePos[i][0], creaturePos[i][1]);
+        column1[4] = TIGER;
+        column2[4] = GEORGIABULLDOG;
+    }
+    else
+    {
+        column1[4] = GEORGIABULLDOG;
+        column2[4] = TIGER;
     }
 
+    shuffle(creatureRest, creatureRest + 8, std::default_random_engine(time(0) + 2 ));
+    for (int i =0; i < 4; i++)
+    {
+        column1[i] = creatureRest[i];
+        column2[i] = creatureRest[i+4];
+    }
+    shuffle(column1, column1 + 5, std::default_random_engine(time(0) ));
+    shuffle(column2, column2 + 5, std::default_random_engine(time(0) + 1));
+
+    for (int i = 0; i < 10 ; i++)
+    {
+        index = (i < 5) ? column1[i]:column2[i-5];
+        spriteCreature[index].setPosition(creaturePos[i].x, creaturePos[i].y);
+    }
+
+    bool paused = true;
+    int score = 0;
+    bool acceptInput = false;
+    float angle;
+    bool beeActive = false;
+    Vector2f buzzVelocity, beeVelocity;
+    Clock clock;
+
+
     while(window.isOpen()){
+
+        /*
+        Event event;
+        while (window.pollEvent(event))
+        {
+
+
+            if (event.type == Event::KeyReleased && !paused)
+            {
+                // Listen for key presses again
+                acceptInput = true;
+            }
+
+        }
+        */
 
         if (Keyboard::isKeyPressed(Keyboard::Escape))
         {
             window.close();
         }
+
+        // Start the game
+        if (Keyboard::isKeyPressed(Keyboard::Return))
+        {
+            paused = false;
+            acceptInput = true;
+            power = 0;
+            powerBar.setSize(Vector2f(powerBarWidth*power, powerBarHeight));
+            score = 0;
+            std::stringstream ss;
+            ss << "Score = " << score;
+            scoreText.setString(ss.str());
+        }
+
+        if(!paused)
+        {
+            Time dt = clock.restart();
+            if (!beeActive)
+            {
+
+                // How fast is the bee
+                srand((int)time(0) * 10);
+                beeVelocity.x = (rand() % 200) + 200;
+                beeVelocity.y = (rand() % 200) + 200;
+
+                // How high is the bee
+                srand((int)time(0) * 10);
+                float height = (rand() % 500) + 500;
+                spriteInsect.setPosition(2000, height);
+                beeActive = true;
+            }
+            else
+                // Move the bee
+            {
+                if(spriteInsect.getPosition().y - (beeVelocity.y * dt.asSeconds()))
+                {
+
+                }
+                spriteInsect.setPosition(
+                        spriteInsect.getPosition().x -
+                        (beeVelocity.x * dt.asSeconds()),
+                        spriteInsect.getPosition().y - beeVelocity.y*dt.asSeconds());
+
+                // Has the bee reached the right hand edge of the screen?
+                if (spriteInsect.getPosition().x < -10)
+                {
+                    beeActive = false;
+                }
+            }
+        }
+
+        if (acceptInput && !paused)
+        {
+            if (Keyboard::isKeyPressed(Keyboard::Down))
+            {
+                angle = spriteBuzz.getRotation();
+                spriteBuzz.setRotation(angle + 1e-2);
+            }
+
+            if (Keyboard::isKeyPressed(Keyboard::Up))
+            {
+
+                angle = spriteBuzz.getRotation();
+                spriteBuzz.setRotation(angle - 1e-2);
+            }
+
+            if (Keyboard::isKeyPressed(Keyboard::Space))
+            {
+                if(power < 1)
+                {
+                    power += 1e-4;
+                }
+                powerBar.setSize(Vector2f(powerBarWidth*power, powerBarHeight));
+            }
+
+        }
+
+
 
         // Clear everything from the last frame
         window.clear();
@@ -226,17 +395,34 @@ int main()
         window.draw(spriteBackground);
         window.draw(powerBar);
         window.draw(powerBarOutline);
-        window.draw(titleText);
         window.draw(scoreText);
         window.draw(livesText);
         window.draw(powerText);
-        for (int i = 0; i < 4 ; i++){
-            window.draw(messageText[i]);
+
+        window.draw(spriteBuzz);
+        window.draw(spriteInsect);
+        for (int i=0; i < totalLives; i++)
+        {
+            window.draw(spriteLives[i]);
         }
 
-        for (int i = 0; i < 2 ; i++){
-            window.draw(nameText[i]);
+        for (int i=0; i<10; i++)
+        {
+            window.draw(spriteCreature[i]);
         }
+
+        if(paused)
+        {
+            for (int i = 0; i < 4 ; i++){
+                window.draw(messageText[i]);
+            }
+
+            for (int i = 0; i < 2 ; i++){
+                window.draw(nameText[i]);
+            }
+            window.draw(titleText);
+        }
+
 
         // Show everything we just drew
         window.display();

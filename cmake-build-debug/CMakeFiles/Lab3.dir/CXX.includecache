@@ -855,6 +855,12 @@ sstream
 -
 iostream
 -
+bits/stdc++.h
+-
+stdlib.h
+-
+time.h
+-
 SFML/Graphics.hpp
 -
 SFML/Audio.hpp
