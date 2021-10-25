@@ -254,10 +254,11 @@ int main()
     }
 
     int index;
-    srand(time(0));
+
 
     int column1[5], column2[5], creatureRest[8] = {1,2,3,4,5,6,7,8};
 
+    srand(time(0));
     if(rand()%2 == 0)
     {
         column1[4] = TIGER;
@@ -289,14 +290,15 @@ int main()
     bool acceptInput = false;
     bool buzzFlying = false;
     bool beeCollide = false;
-    bool dis1(true), disp2(true);
+    bool gameOver = false;
+    bool disp1(true), disp2(true);
     bool creatureCollide = false;
     int creatureIndex;
     float angle;
     bool beeActive = false;
     Vector2f buzzVelocity, beeVelocity;
     Clock clock, beeClock;
-    int beeTime;
+    int lives = totalLives;
 
     float a(-9.8 * 50), tmax(4), tmin(1), vInitialMin, vInitialMax;
     vInitialMin = (1920 - (50))/tmax;
@@ -329,8 +331,13 @@ int main()
         {
             paused = false;
             acceptInput = true;
+            disp1 = true;
+            disp2 = true;
+
+            lives = totalLives;
             power = 0;
             powerBar.setSize(Vector2f(powerBarWidth*power, powerBarHeight));
+
             score = 0;
             std::stringstream ss;
             ss << "Score = " << score;
@@ -459,28 +466,63 @@ int main()
                         creatureCollide = true;
                         buzzFlying = false;
                         acceptInput = true;
-                        creatureIndex = (i < 5) ? column1[i]: column2[i-5];
+                        creatureIndex = i;
                         break;
                     }
                 }
+
+                //Reset if hits nothing
+                if(spriteBuzz.getPosition().x > 2000 || spriteBuzz.getPosition().y > 1300){
+                    lives -= 1;
+                    spriteBuzz.setPosition(50, (1080 / 2.0f) + 200);
+                    spriteBuzz.setRotation(-35);
+                    power = 0;
+                    powerBar.setSize(Vector2f(powerBarWidth*power, powerBarHeight));
+                    acceptInput = true;
+                    buzzFlying = false;
+                    if(lives == 0){
+                        gameOver = true;
+                        paused = true;
+                    }
+                }
+
             }
+
 
             if(creatureCollide)
             {
                 spriteBuzz.setPosition(-100,0);
-                if(creatureIndex == 0 || creatureIndex == 9)
+                int creature = (creatureIndex < 5) ? column1[creatureIndex]:column2[creatureIndex];
+                if(creature == 0 || creature == 9)
                 {
-                    spriteBuzz.setPosition(50, (1080 / 2.0f) + 200);
-                    spriteBuzz.setRotation(-35);
+                    score += 25;
+                    if(creatureIndex < 5){
+                        disp1 = false;
+                    }
+                    else{
+                        disp2 = false;
+                    }
+
                 }
-                else if (creatureIndex == 8){
-                    spriteBuzz.setPosition(50, (1080 / 2.0f) + 200);
-                    spriteBuzz.setRotation(-35);
+                else if (creature == 8){
+                    lives = (lives < 5) ? lives + 1: lives;
                 }
-                else {
-                    spriteBuzz.setPosition(50, (1080 / 2.0f) + 200);
-                    spriteBuzz.setRotation(-35);
+                else{
+                    lives -= 1;
+                    if(lives == 0){
+                        gameOver = true;
+                        paused = true;
+                    }
                 }
+
+                spriteBuzz.setPosition(50, (1080 / 2.0f) + 200);
+                spriteBuzz.setRotation(-35);
+                power = 0;
+                powerBar.setSize(Vector2f(powerBarWidth*power, powerBarHeight));
+                creatureCollide = false;
+                std::stringstream ss;
+                ss << "Score = " << score;
+                scoreText.setString(ss.str());
 
             }
 
@@ -488,6 +530,13 @@ int main()
             {
                 spriteBuzz.setPosition(50, (1080 / 2.0f) + 200);
                 spriteBuzz.setRotation(-35);
+                power = 0;
+                powerBar.setSize(Vector2f(powerBarWidth*power, powerBarHeight));
+                score += 75;
+                beeCollide = false;
+                std::stringstream ss;
+                ss << "Score = " << score;
+                scoreText.setString(ss.str());
             }
         }
 
@@ -505,26 +554,47 @@ int main()
 
         window.draw(spriteBuzz);
         window.draw(spriteInsect);
-        for (int i=0; i < totalLives; i++)
+
+        for (int i=0; i < lives; i++)
         {
             window.draw(spriteLives[i]);
         }
 
-        for (int i=0; i<10; i++)
-        {
-            window.draw(spriteCreature[i]);
+        if(disp1){
+            for (int i=0; i<5; i++)
+            {
+                window.draw(spriteCreature[column1[i]]);
+            }
         }
+
+        if(disp2){
+            for (int i=0; i<5; i++)
+            {
+                window.draw(spriteCreature[column2[i]]);
+            }
+        }
+
 
         if(paused)
         {
-            for (int i = 0; i < 4 ; i++){
-                window.draw(messageText[i]);
+            if(gameOver){
+                titleText.setString("Game Over");
+                window.draw(titleText);
+                for (int i = 0; i < 4 ; i++){
+                    window.draw(messageText[i]);
+                }
+            }
+            else{
+                for (int i = 0; i < 4 ; i++){
+                    window.draw(messageText[i]);
+                }
+
+                for (int i = 0; i < 2 ; i++){
+                    window.draw(nameText[i]);
+                }
+                window.draw(titleText);
             }
 
-            for (int i = 0; i < 2 ; i++){
-                window.draw(nameText[i]);
-            }
-            window.draw(titleText);
         }
 
 
