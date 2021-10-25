@@ -861,6 +861,8 @@ stdlib.h
 -
 time.h
 -
+math.h
+-
 SFML/Graphics.hpp
 -
 SFML/Audio.hpp

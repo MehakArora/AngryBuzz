@@ -7,6 +7,7 @@
 #include <bits/stdc++.h>
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 
@@ -15,8 +16,7 @@ using namespace sf;
 #define UNICORN 8;
 #define GEORGIABULLDOG 9;
 #define TIGER 0;
-
-
+#define PI 3.14159265
 
 
 int main()
@@ -215,10 +215,10 @@ int main()
     scaleCurrent = spriteInsect.getScale();
     spriteInsect.setScale(scaleCurrent.x * 1.5f, scaleCurrent.y * 1.5f);
 
-    spriteBuzz.setPosition(1, (1080 / 2.0f) + 50);
+    spriteBuzz.setPosition(-100, (1080 / 2.0f) + 200);
     spriteBuzz.setRotation(-30);
     scaleCurrent = spriteBuzz.getScale();
-    spriteBuzz.setScale(scaleCurrent.x * 1.5f, scaleCurrent.y * 1.5f);
+    spriteBuzz.setScale(scaleCurrent.x * 1.2f, scaleCurrent.y * 1.2f);
 
     for (int i =0; i < totalLives; i++)
     {
@@ -282,11 +282,19 @@ int main()
     bool paused = true;
     int score = 0;
     bool acceptInput = false;
+    bool buzzFlying = false;
+    bool beeCollide = false;
+    bool creatureCollide = false;
+    int creatureIndex;
     float angle;
     bool beeActive = false;
     Vector2f buzzVelocity, beeVelocity;
-    Clock clock;
+    Clock clock, beeClock;
+    int beeTime;
 
+    float a(-9.8 * 50), tmax(4), tmin(1), vInitialMin, vInitialMax;
+    vInitialMin = (1920 - (-100))/tmax;
+    vInitialMax = (1920 - (-100))/tmin;
 
     while(window.isOpen()){
 
@@ -311,7 +319,7 @@ int main()
         }
 
         // Start the game
-        if (Keyboard::isKeyPressed(Keyboard::Return))
+        if (paused && Keyboard::isKeyPressed(Keyboard::Return))
         {
             paused = false;
             acceptInput = true;
@@ -326,26 +334,43 @@ int main()
         if(!paused)
         {
             Time dt = clock.restart();
+            float dtBee;
+
+
+            //BEE
             if (!beeActive)
             {
 
                 // How fast is the bee
                 srand((int)time(0) * 10);
                 beeVelocity.x = (rand() % 200) + 200;
-                beeVelocity.y = (rand() % 200) + 200;
+                beeVelocity.y = (rand() % 200) - 100;
 
                 // How high is the bee
                 srand((int)time(0) * 10);
-                float height = (rand() % 500) + 500;
+                float height = (rand() % 500) + 100;
                 spriteInsect.setPosition(2000, height);
                 beeActive = true;
+                dtBee = beeClock.getElapsedTime().asSeconds();
+
             }
             else
                 // Move the bee
             {
-                if(spriteInsect.getPosition().y - (beeVelocity.y * dt.asSeconds()))
+                if(spriteInsect.getPosition().y - (beeVelocity.y * dt.asSeconds()) < 30)
                 {
+                    beeVelocity.y = -100;
+                }
+                else if( spriteInsect.getPosition().y - (beeVelocity.y * dt.asSeconds()) > 1000 )
+                {
+                    beeVelocity.y = 100;
+                }
 
+                if( (beeClock.getElapsedTime().asSeconds() - dtBee)   > 1)
+                {
+                    srand((int)time(0) * 10);
+                    beeVelocity.y = (rand() % 200) - 100;
+                    dtBee = beeClock.getElapsedTime().asSeconds();
                 }
                 spriteInsect.setPosition(
                         spriteInsect.getPosition().x -
@@ -358,34 +383,92 @@ int main()
                     beeActive = false;
                 }
             }
-        }
 
-        if (acceptInput && !paused)
-        {
-            if (Keyboard::isKeyPressed(Keyboard::Down))
+
+
+            //BUZZ
+            if (acceptInput && !buzzFlying)
             {
-                angle = spriteBuzz.getRotation();
-                spriteBuzz.setRotation(angle + 1e-2);
-            }
-
-            if (Keyboard::isKeyPressed(Keyboard::Up))
-            {
-
-                angle = spriteBuzz.getRotation();
-                spriteBuzz.setRotation(angle - 1e-2);
-            }
-
-            if (Keyboard::isKeyPressed(Keyboard::Space))
-            {
-                if(power < 1)
+                if (Keyboard::isKeyPressed(Keyboard::Down))
                 {
-                    power += 1e-4;
+                    angle = spriteBuzz.getRotation();
+                    spriteBuzz.setRotation(angle + 1e-2);
                 }
-                powerBar.setSize(Vector2f(powerBarWidth*power, powerBarHeight));
+
+                if (Keyboard::isKeyPressed(Keyboard::Up))
+                {
+
+                    angle = spriteBuzz.getRotation();
+                    spriteBuzz.setRotation(angle - 1e-2);
+                }
+
+                if (Keyboard::isKeyPressed(Keyboard::Space))
+                {
+                    if (power < 1) {
+                        power += 1e-4;
+                    }
+                    powerBar.setSize(Vector2f(powerBarWidth * power, powerBarHeight));
+
+                }
+
+                Event event;
+                while (window.pollEvent(event)) {
+                    if (event.type == Event::KeyReleased && event.key.code == Keyboard::Space) {
+                        float velocity = ((vInitialMax - vInitialMin)*power)/cos(spriteBuzz.getRotation() * PI / 180);
+                        buzzVelocity.x = velocity * cos(spriteBuzz.getRotation() * PI / 180);
+                        buzzVelocity.y = velocity * sin(spriteBuzz.getRotation() * PI / 180);
+                        acceptInput = false;
+                        buzzFlying = true;
+                    }
+                }
+
             }
 
-        }
 
+            //Buzz Flying
+            if(buzzFlying)
+            {
+                spriteBuzz.setPosition(
+                        spriteBuzz.getPosition().x +
+                        (buzzVelocity.x * dt.asSeconds()),
+                        spriteBuzz.getPosition().y + buzzVelocity.y*dt.asSeconds());
+
+                buzzVelocity.y = buzzVelocity.y - a*dt.asSeconds();
+                float theta = atan2(buzzVelocity.y, buzzVelocity.x) * 180 / PI;
+                spriteBuzz.setRotation(theta);
+
+                //Detect Collision
+                float epsilon = 1e-1;
+                Vector2f distance = spriteBuzz.getPosition() - spriteInsect.getPosition();
+                if(distance.x < epsilon && distance.y < epsilon){
+                    //beeCollide = true;
+                    //buzzFlying = false;
+                }
+
+                for (int i = 0; i < 10; i++)
+                {
+                    distance = spriteBuzz.getPosition() - creaturePos[i];
+                    std::cout << distance.x << " " <<distance.y <<std::endl;
+                    if(distance.x < epsilon && distance.y < epsilon){
+                        //creatureCollide = true;
+                        //buzzFlying = false;
+                        creatureIndex = (i < 5) ? column1[i]: column2[i-5];
+                        break;
+                    }
+                }
+            }
+
+            if(creatureCollide)
+            {
+                spriteBuzz.setPosition(-100,0);
+                std::cout << creatureIndex <<std::endl;
+            }
+
+            if(beeCollide)
+            {
+                spriteBuzz.setPosition(-100,0);
+            }
+        }
 
 
         // Clear everything from the last frame
