@@ -221,7 +221,7 @@ int main()
                           textRect.top +
                           textRect.height / 2.0f);
     spriteBuzz.setPosition(50, (1080 / 2.0f) + 200);
-    spriteBuzz.setRotation(-30);
+    spriteBuzz.setRotation(-35);
     scaleCurrent = spriteBuzz.getScale();
     spriteBuzz.setScale(scaleCurrent.x * 1.2f, scaleCurrent.y * 1.2f);
 
@@ -253,11 +253,32 @@ int main()
         creaturePos[i].y = startY + (i % 5)*120;
     }
 
+
+
+    bool paused = true;
+    int score = 0;
+    bool acceptInput = false;
+    bool buzzFlying = false;
+    bool buzzFalling = false;
+    bool beeCollide = false;
+    bool gameOver = false;
+    bool reset = false;
+    bool disp1(true), disp2(true);
+    bool creaturesFalling = false;
+    bool creatureCollide = false;
+    int creatureIndex;
+    float angle, creatureVelocity(0);
+    bool beeActive = false;
+    Vector2f buzzVelocity, beeVelocity;
+    Clock clock, beeClock;
+    int lives = totalLives;
+
+    float a(-9.8 * 50), tmax(4), tmin(1), vInitialMin, vInitialMax;
+    vInitialMin = (1920 - (50))/tmax;
+    vInitialMax = (1920 - (50))/tmin;
+
     int index;
-
-
     int column1[5], column2[5], creatureRest[8] = {1,2,3,4,5,6,7,8};
-
     srand(time(0));
     if(rand()%2 == 0)
     {
@@ -284,42 +305,9 @@ int main()
         index = (i < 5) ? column1[i]:column2[i-5];
         spriteCreature[index].setPosition(creaturePos[i].x, creaturePos[i].y);
     }
-
-    bool paused = true;
-    int score = 0;
-    bool acceptInput = false;
-    bool buzzFlying = false;
-    bool beeCollide = false;
-    bool gameOver = false;
-    bool disp1(true), disp2(true);
-    bool creatureCollide = false;
-    int creatureIndex;
-    float angle;
-    bool beeActive = false;
-    Vector2f buzzVelocity, beeVelocity;
-    Clock clock, beeClock;
-    int lives = totalLives;
-
-    float a(-9.8 * 50), tmax(4), tmin(1), vInitialMin, vInitialMax;
-    vInitialMin = (1920 - (50))/tmax;
-    vInitialMax = (1920 - (50))/tmin;
+    int counter = 0;
 
     while(window.isOpen()){
-
-        /*
-        Event event;
-        while (window.pollEvent(event))
-        {
-
-
-            if (event.type == Event::KeyReleased && !paused)
-            {
-                // Listen for key presses again
-                acceptInput = true;
-            }
-
-        }
-        */
 
         if (Keyboard::isKeyPressed(Keyboard::Escape))
         {
@@ -329,20 +317,61 @@ int main()
         // Start the game
         if (paused && Keyboard::isKeyPressed(Keyboard::Return))
         {
-            paused = false;
-            acceptInput = true;
-            disp1 = true;
-            disp2 = true;
 
-            lives = totalLives;
-            power = 0;
-            powerBar.setSize(Vector2f(powerBarWidth*power, powerBarHeight));
-
+            reset = true;
             score = 0;
             std::stringstream ss;
             ss << "Score = " << score;
             scoreText.setString(ss.str());
+
         }
+
+        if(reset)
+        {
+            paused = false;
+            acceptInput = true;
+            disp1 = true;
+            disp2 = true;
+            lives = totalLives;
+            power = 0;
+            powerBar.setSize(Vector2f(powerBarWidth*power, powerBarHeight));
+
+            srand(time(0) + counter);
+            if(rand()%2 == 0)
+            {
+                column1[4] = TIGER;
+                column2[4] = GEORGIABULLDOG;
+            }
+            else
+            {
+                column1[4] = GEORGIABULLDOG;
+                column2[4] = TIGER;
+            }
+
+            shuffle(creatureRest, creatureRest + 8, std::default_random_engine(time(0) + 2 +counter));
+            for (int i =0; i < 4; i++)
+            {
+                column1[i] = creatureRest[i];
+                column2[i] = creatureRest[i+4];
+            }
+            shuffle(column1, column1 + 5, std::default_random_engine(time(0) + counter));
+            shuffle(column2, column2 + 5, std::default_random_engine(time(0) + 1 + counter));
+
+            for (int i = 0; i < 10 ; i++)
+            {
+                index = (i < 5) ? column1[i]:column2[i-5];
+                spriteCreature[index].setPosition(creaturePos[i].x, creaturePos[i].y);
+                spriteCreature[index].setRotation(0);
+            }
+
+            spriteBuzz.setPosition(50, (1080 / 2.0f) + 200);
+            spriteBuzz.setRotation(-35);
+            reset = false;
+            counter++;
+
+        }
+
+
 
         if(!paused)
         {
@@ -461,6 +490,13 @@ int main()
 
                 for (int i = 0; i < 10; i++)
                 {
+                    if(!disp1 && i < 5){
+                        continue;
+                    }
+                    else if(!disp2 && i > 5){
+                        continue;
+                    }
+
                     distance = spriteBuzz.getPosition() - creaturePos[i];
                     if(abs(distance.x) < epsilon && abs(distance.y) < epsilon){
                         creatureCollide = true;
@@ -491,8 +527,7 @@ int main()
 
             if(creatureCollide)
             {
-                spriteBuzz.setPosition(-100,0);
-                int creature = (creatureIndex < 5) ? column1[creatureIndex]:column2[creatureIndex];
+                int creature = (creatureIndex < 5) ? column1[creatureIndex]:column2[creatureIndex-5];
                 if(creature == 0 || creature == 9)
                 {
                     score += 25;
@@ -501,22 +536,41 @@ int main()
                     }
                     else{
                         disp2 = false;
-                    }
 
+                    }
+                    creaturesFalling = true;
+                    acceptInput = false;
                 }
                 else if (creature == 8){
                     lives = (lives < 5) ? lives + 1: lives;
+                    spriteCreature[creature].setPosition(3000, 3000);
+                    int j((creatureIndex % 5) - 1), index;
+                    for (j; j >= 0; j--){
+                        index = (creatureIndex < 5) ? column1[j]:column2[j + 5];
+                        spriteCreature[index].setPosition(creaturePos[j+1]);
+                        if(creatureIndex < 5){
+                            column1[j+1] = column1[j];
+                        }
+                        else{
+                            column2[j+1 + 5] = column2[j+5];
+                        }
+                    }
                 }
                 else{
                     lives -= 1;
+                    buzzFalling = true;
+                    acceptInput = false;
                     if(lives == 0){
                         gameOver = true;
                         paused = true;
                     }
                 }
 
-                spriteBuzz.setPosition(50, (1080 / 2.0f) + 200);
-                spriteBuzz.setRotation(-35);
+                if(!buzzFalling){
+                    spriteBuzz.setPosition(50, (1080 / 2.0f) + 200);
+                    spriteBuzz.setRotation(-35);
+                }
+
                 power = 0;
                 powerBar.setSize(Vector2f(powerBarWidth*power, powerBarHeight));
                 creatureCollide = false;
@@ -537,6 +591,80 @@ int main()
                 std::stringstream ss;
                 ss << "Score = " << score;
                 scoreText.setString(ss.str());
+            }
+
+            if(buzzFalling){
+                buzzVelocity.y = buzzVelocity.y - a*dt.asSeconds();
+                buzzVelocity.x = 0;
+                spriteBuzz.setPosition(
+                        spriteBuzz.getPosition().x,
+                        spriteBuzz.getPosition().y + buzzVelocity.y*dt.asSeconds());
+                float rotAngle = 3e-1;
+
+                spriteBuzz.rotate(rotAngle);
+
+                if(spriteBuzz.getPosition().y > 1300){
+                    spriteBuzz.setPosition(50, (1080 / 2.0f) + 200);
+                    spriteBuzz.setRotation(-35);
+                    buzzFalling = false;
+                    acceptInput = true;
+                }
+
+            }
+
+            if(creaturesFalling) {
+
+                float rotAngle = 3e-1;
+                creatureVelocity += a*dt.asSeconds();
+                bool check1(true), check2(true);
+                std::cout<<check1 << " " << check2 << std::endl;
+                for (int j=0; j < 5; j++) {
+                    if (!disp1) {
+                        if(column1[j] == 100){
+                            continue;
+                        }
+                        spriteCreature[column1[j]].setPosition(
+                                spriteCreature[column1[j]].getPosition().x,
+                                spriteCreature[column1[j]].getPosition().y - creatureVelocity * dt.asSeconds());
+                        spriteCreature[column1[j]].rotate(rotAngle);
+                        check1 = false;
+                    }
+                    if (!disp2) {
+                        if(column2[j] == 100){
+                            continue;
+                        }
+                        spriteCreature[column2[j + 5]].setPosition(
+                                spriteCreature[column2[j + 5]].getPosition().x,
+                                spriteCreature[column2[j + 5]].getPosition().y - creatureVelocity * dt.asSeconds());
+                        spriteCreature[column2[j + 5]].rotate(rotAngle);
+                        check1 = false;
+                    }
+                }
+
+                if (!disp1) {
+                    int first = (column1[0] == 100) ? 1 : 0;
+                    std::cout << first << " " << column1[first] << std::endl;
+                    if (spriteCreature[column1[first]].getPosition().y > 2000) {
+                        check1 = true;
+                    }
+                }
+                if (!disp2) {
+                    int first = (column2[0] == 100) ? 1 : 0;
+                    if (spriteCreature[column2[first]].getPosition().y > 2000) {
+                        check2 = true;
+                    }
+                }
+
+                if (check1 && check2) {
+                    creaturesFalling = false;
+                    creatureVelocity = 0;
+                    acceptInput = true;
+                }
+
+
+                if (!disp1 && !disp2 && !creaturesFalling) {
+                    reset = true;
+                }
             }
         }
 
@@ -560,14 +688,14 @@ int main()
             window.draw(spriteLives[i]);
         }
 
-        if(disp1){
+        if(disp1 || creaturesFalling){
             for (int i=0; i<5; i++)
             {
                 window.draw(spriteCreature[column1[i]]);
             }
         }
 
-        if(disp2){
+        if(disp2 || creaturesFalling){
             for (int i=0; i<5; i++)
             {
                 window.draw(spriteCreature[column2[i]]);
