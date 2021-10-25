@@ -215,7 +215,12 @@ int main()
     scaleCurrent = spriteInsect.getScale();
     spriteInsect.setScale(scaleCurrent.x * 1.5f, scaleCurrent.y * 1.5f);
 
-    spriteBuzz.setPosition(-100, (1080 / 2.0f) + 200);
+    textRect = spriteBuzz.getLocalBounds();
+    spriteBuzz.setOrigin(textRect.left +
+                          textRect.width / 2.0f,
+                          textRect.top +
+                          textRect.height / 2.0f);
+    spriteBuzz.setPosition(50, (1080 / 2.0f) + 200);
     spriteBuzz.setRotation(-30);
     scaleCurrent = spriteBuzz.getScale();
     spriteBuzz.setScale(scaleCurrent.x * 1.2f, scaleCurrent.y * 1.2f);
@@ -284,6 +289,7 @@ int main()
     bool acceptInput = false;
     bool buzzFlying = false;
     bool beeCollide = false;
+    bool dis1(true), disp2(true);
     bool creatureCollide = false;
     int creatureIndex;
     float angle;
@@ -293,8 +299,8 @@ int main()
     int beeTime;
 
     float a(-9.8 * 50), tmax(4), tmin(1), vInitialMin, vInitialMax;
-    vInitialMin = (1920 - (-100))/tmax;
-    vInitialMax = (1920 - (-100))/tmin;
+    vInitialMin = (1920 - (50))/tmax;
+    vInitialMax = (1920 - (50))/tmin;
 
     while(window.isOpen()){
 
@@ -438,20 +444,21 @@ int main()
                 spriteBuzz.setRotation(theta);
 
                 //Detect Collision
-                float epsilon = 1e-1;
+                float epsilon = 50;
                 Vector2f distance = spriteBuzz.getPosition() - spriteInsect.getPosition();
-                if(distance.x < epsilon && distance.y < epsilon){
-                    //beeCollide = true;
-                    //buzzFlying = false;
+                if(abs(distance.x) < epsilon && abs(distance.y) < epsilon){
+                    beeCollide = true;
+                    acceptInput = true;
+                    buzzFlying = false;
                 }
 
                 for (int i = 0; i < 10; i++)
                 {
                     distance = spriteBuzz.getPosition() - creaturePos[i];
-                    std::cout << distance.x << " " <<distance.y <<std::endl;
-                    if(distance.x < epsilon && distance.y < epsilon){
-                        //creatureCollide = true;
-                        //buzzFlying = false;
+                    if(abs(distance.x) < epsilon && abs(distance.y) < epsilon){
+                        creatureCollide = true;
+                        buzzFlying = false;
+                        acceptInput = true;
                         creatureIndex = (i < 5) ? column1[i]: column2[i-5];
                         break;
                     }
@@ -461,12 +468,26 @@ int main()
             if(creatureCollide)
             {
                 spriteBuzz.setPosition(-100,0);
-                std::cout << creatureIndex <<std::endl;
+                if(creatureIndex == 0 || creatureIndex == 9)
+                {
+                    spriteBuzz.setPosition(50, (1080 / 2.0f) + 200);
+                    spriteBuzz.setRotation(-35);
+                }
+                else if (creatureIndex == 8){
+                    spriteBuzz.setPosition(50, (1080 / 2.0f) + 200);
+                    spriteBuzz.setRotation(-35);
+                }
+                else {
+                    spriteBuzz.setPosition(50, (1080 / 2.0f) + 200);
+                    spriteBuzz.setRotation(-35);
+                }
+
             }
 
             if(beeCollide)
             {
-                spriteBuzz.setPosition(-100,0);
+                spriteBuzz.setPosition(50, (1080 / 2.0f) + 200);
+                spriteBuzz.setRotation(-35);
             }
         }
 
