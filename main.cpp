@@ -253,6 +253,41 @@ int main()
         creaturePos[i].y = startY + (i % 5)*120;
     }
 
+    // Prepare the sound
+    SoundBuffer chopBuffer;
+    chopBuffer.loadFromFile("sound/chop.wav");
+    Sound chop;
+    chop.setBuffer(chopBuffer);
+
+    SoundBuffer deathBuffer;
+    deathBuffer.loadFromFile("sound/death.wav");
+    Sound death;
+    death.setBuffer(deathBuffer);
+
+    // Out of time
+    SoundBuffer ootBuffer;
+    ootBuffer.loadFromFile("sound/out_of_time.wav");
+    Sound outOfTime;
+    outOfTime.setBuffer(ootBuffer);
+
+    // Sad
+    SoundBuffer sadBuffer;
+    sadBuffer.loadFromFile("sound/sad.wav");
+    Sound sad;
+    sad.setBuffer(sadBuffer);
+
+    // Unicorn
+    SoundBuffer unicornBuffer;
+    unicornBuffer.loadFromFile("sound/reachgoal.wav");
+    Sound unicorn;
+    unicorn.setBuffer(unicornBuffer);
+
+    // Bee
+    SoundBuffer beeBuffer;
+    beeBuffer.loadFromFile("sound/bee.wav");
+    Sound bee;
+    bee.setBuffer(beeBuffer);
+
 
 
     bool paused = true;
@@ -261,6 +296,7 @@ int main()
     bool buzzFlying = false;
     bool buzzFalling = false;
     bool beeCollide = false;
+    bool foundUnicorn = false;
     bool gameOver = false;
     bool reset = false;
     bool disp1(true), disp2(true);
@@ -332,6 +368,8 @@ int main()
             acceptInput = true;
             disp1 = true;
             disp2 = true;
+            foundUnicorn = false;
+
             lives = totalLives;
             power = 0;
             powerBar.setSize(Vector2f(powerBarWidth*power, powerBarHeight));
@@ -447,7 +485,7 @@ int main()
                 if (Keyboard::isKeyPressed(Keyboard::Space))
                 {
                     if (power < 1) {
-                        power += 1e-4;
+                        power += 5e-4;
                     }
                     powerBar.setSize(Vector2f(powerBarWidth * power, powerBarHeight));
 
@@ -456,6 +494,7 @@ int main()
                 Event event;
                 while (window.pollEvent(event)) {
                     if (event.type == Event::KeyReleased && event.key.code == Keyboard::Space) {
+                        chop.play();
                         float velocity = ((vInitialMax - vInitialMin)*power)/cos(spriteBuzz.getRotation() * PI / 180);
                         buzzVelocity.x = velocity * cos(spriteBuzz.getRotation() * PI / 180);
                         buzzVelocity.y = velocity * sin(spriteBuzz.getRotation() * PI / 180);
@@ -466,7 +505,7 @@ int main()
 
             }
 
-
+            int creature;
             //Buzz Flying
             if(buzzFlying)
             {
@@ -482,28 +521,34 @@ int main()
                 //Detect Collision
                 float epsilon = 50;
                 Vector2f distance = spriteBuzz.getPosition() - spriteInsect.getPosition();
-                if(abs(distance.x) < epsilon && abs(distance.y) < epsilon){
+
+                if(abs(distance.x) < epsilon && abs(distance.y) < epsilon)
+                {
                     beeCollide = true;
                     acceptInput = true;
                     buzzFlying = false;
                 }
-
-                for (int i = 0; i < 10; i++)
+                else
                 {
-                    if(!disp1 && i < 5){
-                        continue;
-                    }
-                    else if(!disp2 && i > 5){
-                        continue;
-                    }
-
-                    distance = spriteBuzz.getPosition() - creaturePos[i];
-                    if(abs(distance.x) < epsilon && abs(distance.y) < epsilon){
-                        creatureCollide = true;
-                        buzzFlying = false;
-                        acceptInput = true;
-                        creatureIndex = i;
-                        break;
+                    for (int i = 0; i < 10; i++)
+                    {
+                        if(!disp1 && i < 5){
+                            continue;
+                        }
+                        else if(!disp2 && i > 5){
+                            continue;
+                        }
+                        creature = (i < 5) ? column1[i]:column2[i-5];
+                        if(!foundUnicorn || (foundUnicorn &&  creature!=8)) {
+                            distance = spriteBuzz.getPosition() - creaturePos[i];
+                            if (abs(distance.x) < epsilon && abs(distance.y) < epsilon) {
+                                creatureCollide = true;
+                                buzzFlying = false;
+                                acceptInput = true;
+                                creatureIndex = i;
+                                break;
+                            }
+                        }
                     }
                 }
 
@@ -519,6 +564,7 @@ int main()
                     if(lives == 0){
                         gameOver = true;
                         paused = true;
+                        outOfTime.play();
                     }
                 }
 
@@ -527,7 +573,7 @@ int main()
 
             if(creatureCollide)
             {
-                int creature = (creatureIndex < 5) ? column1[creatureIndex]:column2[creatureIndex-5];
+                creature = (creatureIndex < 5) ? column1[creatureIndex]:column2[creatureIndex-5];
                 if(creature == 0 || creature == 9)
                 {
                     score += 25;
@@ -536,33 +582,45 @@ int main()
                     }
                     else{
                         disp2 = false;
-
                     }
                     creaturesFalling = true;
+                    death.play();
                     acceptInput = false;
                 }
-                else if (creature == 8){
+                else if (creature == 8 && !foundUnicorn){
+                    foundUnicorn = true;
+                    unicorn.play();
                     lives = (lives < 5) ? lives + 1: lives;
                     spriteCreature[creature].setPosition(3000, 3000);
                     int j((creatureIndex % 5) - 1), index;
                     for (j; j >= 0; j--){
-                        index = (creatureIndex < 5) ? column1[j]:column2[j + 5];
-                        spriteCreature[index].setPosition(creaturePos[j+1]);
+                        index = (creatureIndex < 5) ? column1[j]:column2[j];
+                        spriteCreature[index].setPosition(creaturePos[int(creatureIndex/5)*5 + j+1]);
                         if(creatureIndex < 5){
                             column1[j+1] = column1[j];
                         }
                         else{
-                            column2[j+1 + 5] = column2[j+5];
+                            column2[j+1] = column2[j];
                         }
                     }
+
+                    if(creatureIndex < 5){
+                        column1[0] = UNICORN;
+                    }
+                    else{
+                        column2[0] = UNICORN;
+                    }
+
                 }
                 else{
                     lives -= 1;
                     buzzFalling = true;
+                    sad.play();
                     acceptInput = false;
                     if(lives == 0){
                         gameOver = true;
                         paused = true;
+                        outOfTime.play();
                     }
                 }
 
@@ -584,6 +642,7 @@ int main()
             {
                 spriteBuzz.setPosition(50, (1080 / 2.0f) + 200);
                 spriteBuzz.setRotation(-35);
+                bee.play();
                 power = 0;
                 powerBar.setSize(Vector2f(powerBarWidth*power, powerBarHeight));
                 score += 75;
@@ -594,6 +653,7 @@ int main()
             }
 
             if(buzzFalling){
+
                 buzzVelocity.y = buzzVelocity.y - a*dt.asSeconds();
                 buzzVelocity.x = 0;
                 spriteBuzz.setPosition(
@@ -617,39 +677,41 @@ int main()
                 float rotAngle = 3e-1;
                 creatureVelocity += a*dt.asSeconds();
                 bool check1(true), check2(true);
-                std::cout<<check1 << " " << check2 << std::endl;
-                for (int j=0; j < 5; j++) {
-                    if (!disp1) {
-                        if(column1[j] == 100){
-                            continue;
-                        }
-                        spriteCreature[column1[j]].setPosition(
-                                spriteCreature[column1[j]].getPosition().x,
-                                spriteCreature[column1[j]].getPosition().y - creatureVelocity * dt.asSeconds());
-                        spriteCreature[column1[j]].rotate(rotAngle);
+
+                for (int j=0; j < 5; j++)
+                {
+                    if (!disp1)
+                    {
                         check1 = false;
+                        if(!foundUnicorn || (foundUnicorn && column1[j]!=8))
+                        {
+                            spriteCreature[column1[j]].setPosition(
+                                    spriteCreature[column1[j]].getPosition().x,
+                                    spriteCreature[column1[j]].getPosition().y - creatureVelocity * dt.asSeconds());
+                            spriteCreature[column1[j]].rotate(rotAngle);
+                        }
                     }
-                    if (!disp2) {
-                        if(column2[j] == 100){
-                            continue;
+                    if (!disp2)
+                    {
+                        check2 = false;
+                        if(!foundUnicorn || (foundUnicorn && column1[j]!=8))
+                        {
+                            spriteCreature[column2[j]].setPosition(
+                                    spriteCreature[column2[j ]].getPosition().x,
+                                    spriteCreature[column2[j]].getPosition().y - creatureVelocity * dt.asSeconds());
+                            spriteCreature[column2[j]].rotate(rotAngle);
                         }
-                        spriteCreature[column2[j + 5]].setPosition(
-                                spriteCreature[column2[j + 5]].getPosition().x,
-                                spriteCreature[column2[j + 5]].getPosition().y - creatureVelocity * dt.asSeconds());
-                        spriteCreature[column2[j + 5]].rotate(rotAngle);
-                        check1 = false;
                     }
                 }
 
                 if (!disp1) {
-                    int first = (column1[0] == 100) ? 1 : 0;
-                    std::cout << first << " " << column1[first] << std::endl;
+                    int first = (foundUnicorn && column1[0] == 8) ? 1 : 0;
                     if (spriteCreature[column1[first]].getPosition().y > 2000) {
                         check1 = true;
                     }
                 }
                 if (!disp2) {
-                    int first = (column2[0] == 100) ? 1 : 0;
+                    int first = (foundUnicorn && column2[0] == 8) ? 1 : 0;
                     if (spriteCreature[column2[first]].getPosition().y > 2000) {
                         check2 = true;
                     }
@@ -702,11 +764,10 @@ int main()
             }
         }
 
-
         if(paused)
         {
             if(gameOver){
-                titleText.setString("Game Over");
+                titleText.setString("Game Is Now Over");
                 window.draw(titleText);
                 for (int i = 0; i < 4 ; i++){
                     window.draw(messageText[i]);
