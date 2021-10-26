@@ -352,6 +352,7 @@ int main()
     bool creaturesFalling = false;
     bool creatureCollide = false;
     bool beeActive = false;
+    bool beeHit = false;
     bool makeScoreFly = false;
 
     /* *************************** Other Variables ***************************** */
@@ -409,6 +410,7 @@ int main()
             powerBar.setSize(Vector2f(powerBarWidth*power, powerBarHeight));
 
             Shuffle(counter, creaturePos);
+            beeHit = false;
             spriteBuzz.setPosition(50, (1080 / 2.0f) + 200);
             spriteBuzz.setRotation(-35);
             reset = false;
@@ -435,7 +437,8 @@ int main()
                 srand((int)time(0) * 10);
                 float height = (rand() % 500) + 100;
                 spriteInsect.setPosition(2000, height);
-                beeActive = true;
+                if(!beeHit)
+                    beeActive = true;
                 dtBee = beeClock.getElapsedTime().asSeconds();
 
             }
@@ -462,7 +465,7 @@ int main()
                         (beeVelocity.x * dt.asSeconds()),
                         spriteInsect.getPosition().y - beeVelocity.y*dt.asSeconds());
 
-                // Has the bee reached the right hand edge of the screen?
+                // Has the bee reached the left hand edge of the screen?
                 if (spriteInsect.getPosition().x < -10)
                 {
                     beeActive = false;
@@ -526,7 +529,7 @@ int main()
                 float epsilon = 50;
                 Vector2f distance = spriteBuzz.getPosition() - spriteInsect.getPosition();
 
-                if(abs(distance.x) < epsilon && abs(distance.y) < epsilon)
+                if((abs(distance.x) < epsilon && abs(distance.y) < epsilon) &&!beeHit)
                 {
                     beeCollide = true;
                     acceptInput = true;
@@ -672,6 +675,7 @@ int main()
                 spriteBuzz.setPosition(50, (1080 / 2.0f) + 200);
                 spriteBuzz.setRotation(-35);
                 beeCollide = false;
+                beeHit = true;
 
             }
 
@@ -791,7 +795,10 @@ int main()
         window.draw(powerText);
 
         window.draw(spriteBuzz);
-        window.draw(spriteInsect);
+        if(!beeHit){
+            window.draw(spriteInsect);
+        }
+
         window.draw(plusScore);
 
         for (int i=0; i < lives; i++)
