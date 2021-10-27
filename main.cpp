@@ -145,6 +145,7 @@ int main()
     Text messageText[4];
     Text powerText;
     Text nameText[2];
+    Text woohoo;
 
     Font font;
     font.loadFromFile("fonts/KOMIKAP_.ttf");
@@ -154,6 +155,7 @@ int main()
     livesText.setFont(font);
     powerText.setFont(font);
     plusScore.setFont(font);
+    woohoo.setFont(font);
 
     for (int i = 0; i < 4 ; i++)
     {
@@ -177,11 +179,13 @@ int main()
     nameText[0].setString(" Created by ");
     nameText[1].setString(" Mehak Arora ");
     plusScore.setString("0");
+    woohoo.setString("Wow! Level Reset!");
 
     titleText.setCharacterSize(100);
     scoreText.setCharacterSize(30);
     livesText.setCharacterSize(30);
     plusScore.setCharacterSize(30);
+    woohoo.setCharacterSize(100);
     for (int i = 0; i < 4 ; i++)
     {
         messageText[i].setCharacterSize(50);
@@ -198,6 +202,7 @@ int main()
     scoreText.setFillColor(Color::White);
     livesText.setFillColor(Color::White);
     plusScore.setFillColor(Color::Cyan);
+    woohoo.setFillColor(Color::Magenta);
 
     for (int i = 0; i < 4 ; i++)
     {
@@ -258,6 +263,13 @@ int main()
     powerText.setPosition(30, 1000);
     powerBar.setPosition(150 ,  1000);
     powerBarOutline.setPosition(150 ,  1000);
+    textRect = woohoo.getLocalBounds();
+
+    woohoo.setOrigin(textRect.left +
+                        textRect.width / 2.0f,
+                        textRect.top +
+                        textRect.height / 2.0f);
+    woohoo.setPosition(1920 / 2.0f, 1080 / 4.0f - 100);
 
     Vector2f scaleCurrent;
     spriteInsect.setPosition( 1600,(1080 / 4.0f) - 100);
@@ -337,6 +349,12 @@ int main()
     Sound bee;
     bee.setBuffer(beeBuffer);
 
+    // Woohoo
+    SoundBuffer woohooBuffer;
+    woohooBuffer.loadFromFile("sound/woohoo.wav");
+    Sound woohoos;
+    woohoos.setBuffer(woohooBuffer);
+
 
     /* *************************** Check Variables ***************************** */
 
@@ -354,6 +372,7 @@ int main()
     bool beeActive = false;
     bool beeHit = false;
     bool makeScoreFly = false;
+    bool levelUp = false;
 
     /* *************************** Other Variables ***************************** */
     int creatureIndex;
@@ -512,6 +531,8 @@ int main()
                     }
                 }
             }
+            Event event;
+            while (window.pollEvent(event));
 
             /* ****************** PROJECTILE MOTION AND COLLISION *********************** */
             if(buzzFlying)
@@ -590,6 +611,10 @@ int main()
                     else{
                         disp2 = false;
                     }
+
+                    if(!disp1 && !disp2){
+                        woohoos.play();
+                    }
                     creaturesFalling = true;
                     death.play();
                     acceptInput = false;
@@ -660,7 +685,7 @@ int main()
             {
                 bee.play();
                 std::stringstream ss;
-                ss << "+" << 25;
+                ss << "+" << 75;
                 plusScore.setString(ss.str());
                 plusScore.setCharacterSize(30);
                 plusScore.setPosition(spriteBuzz.getPosition());
@@ -775,11 +800,18 @@ int main()
                     acceptInput = true;
                 }
 
+                if(!disp1 && !disp2){
+                    levelUp = true;
+                }
 
                 if (!disp1 && !disp2 && !creaturesFalling) {
                     reset = true;
+                    levelUp = false;
                 }
+
+
             }
+
         }
 
 
@@ -793,6 +825,10 @@ int main()
         window.draw(scoreText);
         window.draw(livesText);
         window.draw(powerText);
+
+        if(levelUp){
+            window.draw(woohoo);
+        }
 
         window.draw(spriteBuzz);
         if(!beeHit){
